@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - run: go vet ./...
+
+      - run: go test ./...
+
+      - name: Build the module
+        run: make build
+
+      # The catalogue rebuilds your module from source and refuses the entry
+      # unless it matches your digest exactly. So the build has to be
+      # reproducible — and the cheapest place to find out that it is not is
+      # here, not in somebody else's pull request.
+      - name: The build has to be reproducible
+        run: |
+          set -euo pipefail
+          first=$(sha256sum example.wasm | cut -d' ' -f1)
+          rm -f example.wasm
+          # A different directory is the case that catches a missing -trimpath:
+          # without it the build path ends up inside the binary.
+          cp -r . /tmp/elsewhere && cd /tmp/elsewhere
+          make build >/dev/null
+          second=$(sha256sum example.wasm | cut -d' ' -f1)
+          if [ "$first" != "$second" ]; then
+            echo "::error::the build is not reproducible — $first vs $second (is -trimpath still there?)"
+            exit 1
+          fi
+          echo "reproducible: $first"
