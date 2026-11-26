@@ -37,6 +37,8 @@ func (plugin) PromptDoc(scopes []string) string           // optional: what the 
 
 Declare in `Describe` only what you actually implement. Claiming `Probe: true` without a `Probe` method earns an operator a button that can only fail.
 
+The same goes for credentials. By default Covey refuses every action until the organisation has stored `<name>_token` and `<name>_url`. If your plugin works without them, say so: `Credentials: "optional"` (granted without them, and whatever is stored is still passed on) or `Credentials: "none"` (never needs one). Without a base URL a relative `covey.Fetch` fails with an error that says so. An older Covey ignores the field and keeps refusing, so a catalogue entry that relies on it sets `covey_min_version`.
+
 ## What your plugin cannot do — and why that is the point
 
 | | |

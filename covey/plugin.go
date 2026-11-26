@@ -75,6 +75,22 @@ type Description struct {
 	// Auth says where the host should put the token. Empty =
 	// "Authorization: Bearer {token}".
 	Auth AuthDesc `json:"auth,omitempty"`
+	// Credentials says whether the plugin needs the brokered <name>_token and
+	// <name>_url at all:
+	//
+	//   - "" (the default): both are required, and the broker denies without
+	//     them.
+	//   - "optional": the plugin works without a secret; a stored
+	//     <name>_token or <name>_url is passed on when there is one.
+	//   - "none": the plugin never needs one, typically because it reaches
+	//     only declared Hosts, which never receive a credential anyway.
+	//
+	// With "optional" or "none" a missing <name>_url does not deny either. A
+	// relative fetch without a base URL then fails with an error that says so;
+	// absolute URLs to declared Hosts are unaffected. Any other value counts as
+	// the default. A covey that predates this field ignores it and keeps
+	// denying.
+	Credentials string `json:"credentials,omitempty"`
 	// Probe/Poll: set these only if you implement the matching interface.
 	// Claiming a capability you do not have earns the operator a button that
 	// can only fail.
