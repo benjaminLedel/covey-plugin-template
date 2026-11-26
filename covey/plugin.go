@@ -75,12 +75,27 @@ type Description struct {
 	// Auth says where the host should put the token. Empty =
 	// "Authorization: Bearer {token}".
 	Auth AuthDesc `json:"auth,omitempty"`
+	// Credentials says whether the plugin needs a brokered secret at all:
+	// CredentialsRequired (the default) — <name>_token and <name>_url;
+	// CredentialsOptional — granted without a secret, whatever is stored is
+	// passed on; CredentialsNone — never needs one, for a plugin that reaches
+	// only hosts it declares. Both of the latter make <name>_url optional. An
+	// unknown value reads as the default. Needs a covey that knows the field;
+	// an older one ignores it and keeps asking for both secrets.
+	Credentials string `json:"credentials,omitempty"`
 	// Probe/Poll: set these only if you implement the matching interface.
 	// Claiming a capability you do not have earns the operator a button that
 	// can only fail.
 	Probe bool `json:"probe,omitempty"`
 	Poll  bool `json:"poll,omitempty"`
 }
+
+// The values of Description.Credentials.
+const (
+	CredentialsRequired = ""
+	CredentialsOptional = "optional"
+	CredentialsNone     = "none"
+)
 
 type AuthDesc struct {
 	Header string `json:"header,omitempty"`
