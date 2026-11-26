@@ -37,6 +37,8 @@ func (plugin) PromptDoc(scopes []string) string           // optional: what the 
 
 Declare in `Describe` only what you actually implement. Claiming `Probe: true` without a `Probe` method earns an operator a button that can only fail.
 
+A plugin that reaches only public hosts it declares sets `Credentials: covey.CredentialsNone`; one whose token merely raises a limit sets `covey.CredentialsOptional`. Left empty, covey asks for `<name>_token` and `<name>_url` before any action runs. The field needs covey 0.16.0 or later, so a catalogue entry for a plugin that sets it carries `covey_min_version: 0.16.0`.
+
 ## What your plugin cannot do — and why that is the point
 
 | | |
